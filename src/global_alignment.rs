@@ -5,7 +5,7 @@ use std::collections::VecDeque;
 //
 //
 
-#[derive(Eq, Debug, Clone)]
+#[derive(PartialEq, Eq, Debug, Clone)]
 struct AlignmentNode {
     a_idx: usize,
     b_idx: usize,
@@ -71,20 +71,22 @@ fn walk_back(
     loop {
         if let Some(cell) = todo.pop_front() {
             let AlignmentNode {
-                a_idx: jj,
-                b_idx: ii,
+                a_idx: mut jj,
+                b_idx: mut ii,
                 alignment,
             } = cell;
             let cell_score = vecvec[ii][jj];
             println!("checking cell[{}][{}] : {:?}", ii, jj, cell_score);
             let up_left = vecvec[ii - 1][jj - 1];
 
-            if ii > 0 && jj > 0 && (cell_score == up_left + ss.same || cell_score == up_left + ss.diff)
+            if ii > 0
+                && jj > 0
+                && (cell_score == up_left + ss.same || cell_score == up_left + ss.diff)
             {
-                let (mut upper_align, mut left_align) = alignments[alignment];
+                let align = &mut alignments[alignment];
                 println!("  we have a match");
-                upper_align.push(csa.next().unwrap());
-                left_align.push(csb.next().unwrap());
+                align.a.push(csa.next().unwrap());
+                align.b.push(csb.next().unwrap());
                 ii = ii - 1;
                 jj = jj - 1;
             } else if ii > 0 && cell_score == vecvec[ii - 1][jj] + ss.indel {
